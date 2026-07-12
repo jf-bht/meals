@@ -40,6 +40,22 @@ Kommentar "SDK 54 wegen Nutzer-Expo-Go-Version") — das ist eine reine
 Umgebungs-/Test-Anforderung, keine fachliche Entscheidung, und könnte sich
 ändern, sobald die installierte Expo-Go-App aktualisiert wird.
 
+**Zweiter Nebenbefund (Web-Only, im Browser getestet):** Trotz des
+`typescript`-Fixes blieb die Web-Ansicht weiß/leer, Browser-Konsole zeigte
+`Invalid hook call` + `Cannot read properties of null (reading 'useState')`
+— das klassische Symptom für "mehr als eine React-Kopie im Bundle".
+`npm ls react react-native` zeigte den Grund: eine verwaiste
+`react-native@0.86.0` (die alte SDK-57-Version) hing noch verschachtelt
+unter `expo-status-bar → react-native-is-edge-to-edge` und zog
+`react@19.2.3` nach, parallel zur korrekten `react@19.1.0` aus dem
+SDK-54-Baum — zwei React-Instanzen gleichzeitig geladen, Hooks brechen.
+`npx expo install --fix` dedupliziert offenbar nicht zuverlässig tief
+verschachtelte, transitive Pakete. Behoben durch eine **vollständige
+Neuinstallation**: `rm -rf` aller `node_modules`-Ordner (Root + alle drei
+Workspaces) und `package-lock.json`, danach `npm install` von Grund auf —
+danach zeigte `npm ls react react-native react-dom` nur noch je eine
+einzige, konsistente Version im gesamten Baum.
+
 ## Verifikation
 
 - `npx expo-doctor`: 20/20 Checks bestanden (projektinterne Konsistenz;
@@ -54,6 +70,11 @@ Umgebungs-/Test-Anforderung, keine fachliche Entscheidung, und könnte sich
   54.0.2 laut Store-Angabe unterstützt.
 - Web- und iOS-Bundle kompilieren weiterhin fehlerfrei (200 OK für beide
   Plattform-Bundle-Requests).
+- Nach der vollständigen Neuinstallation: `npm ls react react-native
+  react-dom` liefert für alle drei Pakete genau eine Version im gesamten
+  Baum (`react@19.1.0`, `react-native@0.81.5`, `react-dom@19.1.0`), 0
+  Treffer für die alte `19.2.3` im ausgelieferten Bundle (`grep -c`). Web-
+  Ansicht lädt danach ohne Konsolen-Fehler.
 
 ## Referenzierte Requirements
 
