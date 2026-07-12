@@ -1,7 +1,9 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ScreenHeader } from "../components/ScreenHeader";
+import { RecipeDetailModal } from "./RecipeDetailModal";
 import { colors, radii, spacing, typography } from "../theme";
-import type { MealType, WeekPlanMeal } from "../api/types";
+import type { MealType, Recipe, WeekPlanMeal } from "../api/types";
 
 const WEEKDAY_LABELS = ["SO", "MO", "DI", "MI", "DO", "FR", "SA"];
 const MEAL_LABELS: Record<MealType, string> = {
@@ -28,6 +30,8 @@ export function WochenplanScreen({
   loading: boolean;
   onRegenerate: () => void;
 }) {
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+
   const days = Array.from({ length: 7 }, (_, day) => ({
     day,
     ...formatDay(day),
@@ -57,7 +61,11 @@ export function WochenplanScreen({
                 {d.weekday} · {d.date}
               </Text>
               {d.meals.map((meal) => (
-                <View key={`${meal.day}-${meal.mealType}`} style={styles.card}>
+                <Pressable
+                  key={`${meal.day}-${meal.mealType}`}
+                  style={styles.card}
+                  onPress={() => setSelectedRecipe(meal.recipe)}
+                >
                   <View style={styles.thumbnail}>
                     <Text style={styles.thumbnailLabel}>FOTO</Text>
                   </View>
@@ -66,14 +74,22 @@ export function WochenplanScreen({
                       <Text style={styles.mealType}>{MEAL_LABELS[meal.mealType]}</Text>
                     </View>
                     <Text style={styles.recipeName}>{meal.recipe.name}</Text>
-                    <Text style={styles.recipeMeta}>{meal.recipe.macrosPerPortion.kcal} kcal</Text>
+                    <Text style={styles.recipeMeta}>
+                      ⏱ {meal.recipe.prepTimeMinutes} Min · {meal.recipe.macrosPerPortion.kcal} kcal
+                    </Text>
                   </View>
-                </View>
+                </Pressable>
               ))}
             </View>
           ))}
         </ScrollView>
       )}
+
+      <RecipeDetailModal
+        recipe={selectedRecipe}
+        visible={selectedRecipe !== null}
+        onClose={() => setSelectedRecipe(null)}
+      />
     </View>
   );
 }

@@ -30,6 +30,7 @@ export interface Recipe {
   // z. B. "Rindersteak" als Frühstücksvorschlag. Der kleine Demo-Pool hat
   // bewusst nur 3 Frühstücks-Rezepte — realistische Einschränkung, kein Bug.
   mealTypes: MealType[];
+  prepTimeMinutes: number;
   macrosPerPortion: RecipeMacros;
   // Mengen gelten pro 1 Portion — der Aufrufer (grocery-service) skaliert
   // mit der tatsächlichen Portionsanzahl aus dem Wochenplan.
@@ -47,6 +48,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 25,
     macrosPerPortion: { kcal: 550, proteinG: 45, fatG: 12, carbsG: 60 },
     ingredientsPerPortion: [
       { name: "Hähnchenbrust", quantity: 150, unit: "g" },
@@ -61,6 +63,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 30,
     macrosPerPortion: { kcal: 620, proteinG: 40, fatG: 22, carbsG: 55 },
     ingredientsPerPortion: [
       { name: "Rinderhack", quantity: 150, unit: "g" },
@@ -75,6 +78,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: ["fish"],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 25,
     macrosPerPortion: { kcal: 580, proteinG: 38, fatG: 24, carbsG: 45 },
     ingredientsPerPortion: [
       { name: "Lachsfilet", quantity: 150, unit: "g" },
@@ -89,6 +93,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["dairy"],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 30,
     macrosPerPortion: { kcal: 480, proteinG: 22, fatG: 14, carbsG: 65 },
     ingredientsPerPortion: [
       { name: "Linsen", quantity: 100, unit: "g" },
@@ -103,6 +108,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["dairy", "gluten"],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 35,
     macrosPerPortion: { kcal: 520, proteinG: 18, fatG: 20, carbsG: 62 },
     ingredientsPerPortion: [
       { name: "Feta", quantity: 60, unit: "g" },
@@ -117,6 +123,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: ["sesame"],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 15,
     macrosPerPortion: { kcal: 500, proteinG: 20, fatG: 18, carbsG: 60 },
     ingredientsPerPortion: [
       { name: "Kichererbsen", quantity: 150, unit: "g" },
@@ -131,6 +138,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: ["soy", "peanut"],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 20,
     macrosPerPortion: { kcal: 540, proteinG: 28, fatG: 20, carbsG: 55 },
     ingredientsPerPortion: [
       { name: "Tofu", quantity: 150, unit: "g" },
@@ -145,6 +153,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: [],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 30,
     macrosPerPortion: { kcal: 470, proteinG: 21, fatG: 10, carbsG: 70 },
     ingredientsPerPortion: [
       { name: "Rote Linsen", quantity: 100, unit: "g" },
@@ -159,6 +168,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 40,
     macrosPerPortion: { kcal: 560, proteinG: 42, fatG: 15, carbsG: 58 },
     ingredientsPerPortion: [
       { name: "Putenbrust", quantity: 150, unit: "g" },
@@ -172,6 +182,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["egg", "gluten"],
     mealTypes: ["breakfast"],
+    prepTimeMinutes: 15,
     macrosPerPortion: { kcal: 490, proteinG: 25, fatG: 22, carbsG: 40 },
     ingredientsPerPortion: [
       { name: "Eier", quantity: 3, unit: "Stück" },
@@ -191,6 +202,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 35,
     macrosPerPortion: { kcal: 720, proteinG: 45, fatG: 25, carbsG: 70 },
     ingredientsPerPortion: [
       { name: "Rinderhack", quantity: 180, unit: "g" },
@@ -205,6 +217,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: ["sesame"],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 20,
     macrosPerPortion: { kcal: 700, proteinG: 24, fatG: 26, carbsG: 85 },
     ingredientsPerPortion: [
       { name: "Kichererbsen", quantity: 180, unit: "g" },
@@ -223,6 +236,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["dairy"],
     mealTypes: ["breakfast"],
+    prepTimeMinutes: 10,
     macrosPerPortion: { kcal: 380, proteinG: 18, fatG: 10, carbsG: 55 },
     ingredientsPerPortion: [
       { name: "Haferflocken", quantity: 60, unit: "g" },
@@ -236,6 +250,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     mealTypes: ["lunch", "dinner"],
+    prepTimeMinutes: 30,
     macrosPerPortion: { kcal: 850, proteinG: 55, fatG: 35, carbsG: 50 },
     ingredientsPerPortion: [
       { name: "Rindersteak", quantity: 200, unit: "g" },
@@ -254,6 +269,7 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["dairy", "gluten"],
     mealTypes: ["breakfast"],
+    prepTimeMinutes: 5,
     macrosPerPortion: { kcal: 420, proteinG: 28, fatG: 8, carbsG: 52 },
     ingredientsPerPortion: [
       { name: "Magerquark", quantity: 200, unit: "g" },

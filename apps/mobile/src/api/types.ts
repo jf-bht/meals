@@ -47,6 +47,7 @@ export interface Recipe {
   dietType: DietType;
   allergens: string[];
   mealTypes: MealType[];
+  prepTimeMinutes: number;
   macrosPerPortion: RecipeMacros;
   ingredientsPerPortion: Ingredient[];
 }
