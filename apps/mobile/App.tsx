@@ -9,7 +9,7 @@ import { EinkaufslisteScreen } from "./src/screens/EinkaufslisteScreen";
 import { ProfilScreen } from "./src/screens/ProfilScreen";
 import { BottomNav, type MainScreen } from "./src/components/BottomNav";
 import { PrimaryButton } from "./src/components/PrimaryButton";
-import { generateWeekPlan } from "./src/domain/weekPlan";
+import { generateWeekPlan, swapMeal } from "./src/domain/weekPlan";
 import { fetchGroceryList } from "./src/api/client";
 import type { DietType, GroceryListGroup, MacroResult, WeekPlanMeal } from "./src/api/types";
 import { colors, spacing, typography } from "./src/theme";
@@ -77,6 +77,24 @@ export default function App() {
     void runPlanGeneration(profile.dietType, profile.allergies, profile.macros);
   }
 
+  // REQ-009: Einzelne Mahlzeit tauschen, ohne den gesamten Plan neu zu
+  // generieren; die Einkaufsliste aktualisiert sich automatisch danach.
+  async function handleSwapMeal(mealToReplace: WeekPlanMeal) {
+    if (!profile) return;
+    const newRecipe = await swapMeal({
+      dietType: profile.dietType,
+      allergies: profile.allergies,
+      dailyMacros: profile.macros,
+      mealToReplace,
+      allMeals: meals,
+    });
+    const updatedMeals = meals.map((m) =>
+      m.day === mealToReplace.day && m.mealType === mealToReplace.mealType ? { ...m, recipe: newRecipe } : m,
+    );
+    setMeals(updatedMeals);
+    void loadGroceryList(updatedMeals);
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -106,7 +124,12 @@ export default function App() {
           <View style={styles.flexFill}>
             {activeScreen === "home" ? <HomeScreen /> : null}
             {activeScreen === "plan" ? (
-              <WochenplanScreen meals={meals} loading={false} onRegenerate={handleRegenerate} />
+              <WochenplanScreen
+                meals={meals}
+                loading={false}
+                onRegenerate={handleRegenerate}
+                onSwapMeal={handleSwapMeal}
+              />
             ) : null}
             {activeScreen === "grocery" ? (
               <EinkaufslisteScreen groups={groceryGroups} loading={groceryLoading} />

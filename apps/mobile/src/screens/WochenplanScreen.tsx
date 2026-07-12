@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { ScreenHeader } from "../components/ScreenHeader";
 import { RecipeDetailModal } from "./RecipeDetailModal";
 import { colors, radii, spacing, typography } from "../theme";
-import type { MealType, Recipe, WeekPlanMeal } from "../api/types";
+import type { MealType, WeekPlanMeal } from "../api/types";
 
 const WEEKDAY_LABELS = ["SO", "MO", "DI", "MI", "DO", "FR", "SA"];
 const MEAL_LABELS: Record<MealType, string> = {
@@ -25,12 +25,32 @@ export function WochenplanScreen({
   meals,
   loading,
   onRegenerate,
+  onSwapMeal,
 }: {
   meals: WeekPlanMeal[];
   loading: boolean;
   onRegenerate: () => void;
+  // REQ-009: tauscht genau diese eine Mahlzeit, ohne den Plan neu zu
+  // generieren. Wirft bei Fehlschlag (z. B. kein Alternative im Demo-Pool).
+  onSwapMeal: (meal: WeekPlanMeal) => Promise<void>;
 }) {
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<WeekPlanMeal | null>(null);
+  const [swapping, setSwapping] = useState(false);
+  const [swapError, setSwapError] = useState<string | null>(null);
+
+  async function handleSwapPress() {
+    if (!selectedMeal) return;
+    setSwapping(true);
+    setSwapError(null);
+    try {
+      await onSwapMeal(selectedMeal);
+      setSelectedMeal(null);
+    } catch (err) {
+      setSwapError(err instanceof Error ? err.message : "Tausch fehlgeschlagen.");
+    } finally {
+      setSwapping(false);
+    }
+  }
 
   const days = Array.from({ length: 7 }, (_, day) => ({
     day,
@@ -64,7 +84,10 @@ export function WochenplanScreen({
                 <Pressable
                   key={`${meal.day}-${meal.mealType}`}
                   style={styles.card}
-                  onPress={() => setSelectedRecipe(meal.recipe)}
+                  onPress={() => {
+                    setSwapError(null);
+                    setSelectedMeal(meal);
+                  }}
                 >
                   <View style={styles.thumbnail}>
                     <Text style={styles.thumbnailLabel}>FOTO</Text>
@@ -86,9 +109,12 @@ export function WochenplanScreen({
       )}
 
       <RecipeDetailModal
-        recipe={selectedRecipe}
-        visible={selectedRecipe !== null}
-        onClose={() => setSelectedRecipe(null)}
+        recipe={selectedMeal?.recipe ?? null}
+        visible={selectedMeal !== null}
+        onClose={() => setSelectedMeal(null)}
+        onSwap={handleSwapPress}
+        swapping={swapping}
+        swapError={swapError}
       />
     </View>
   );

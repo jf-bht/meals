@@ -1,4 +1,5 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { PrimaryButton } from "../components/PrimaryButton";
 import { colors, radii, spacing, typography } from "../theme";
 import type { Recipe } from "../api/types";
 
@@ -17,10 +18,19 @@ export function RecipeDetailModal({
   recipe,
   visible,
   onClose,
+  onSwap,
+  swapping,
+  swapError,
 }: {
   recipe: Recipe | null;
   visible: boolean;
   onClose: () => void;
+  // REQ-009 Mahlzeit-Swap: nur gesetzt, wenn das Modal für eine konkrete
+  // Mahlzeit im Wochenplan geöffnet wurde (nicht z. B. im HomeScreen-Katalog,
+  // wo es keinen Plan-Bezug gibt).
+  onSwap?: () => void;
+  swapping?: boolean;
+  swapError?: string | null;
 }) {
   return (
     <Modal visible={visible && recipe !== null} animationType="slide" transparent onRequestClose={onClose}>
@@ -63,6 +73,13 @@ export function RecipeDetailModal({
                   ))}
                 </View>
               </ScrollView>
+
+              {onSwap ? (
+                <View style={styles.footer}>
+                  {swapError ? <Text style={styles.errorText}>{swapError}</Text> : null}
+                  <PrimaryButton label="Diese Mahlzeit tauschen ⇄" onPress={onSwap} loading={swapping} />
+                </View>
+              ) : null}
             </>
           ) : null}
         </View>
@@ -130,6 +147,18 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.md,
+  },
+  footer: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  errorText: {
+    color: colors.danger,
+    fontSize: 13,
+    marginBottom: spacing.sm,
+    textAlign: "center",
   },
   macroRow: {
     flexDirection: "row",
