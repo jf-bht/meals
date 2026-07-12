@@ -19,7 +19,8 @@ gemeinsame Supabase-Datenschicht.
 ```
 apps/
   mobile/              React Native / Expo Client — Onboarding (REQ-001),
-                        Wochenplan-Anzeige (REQ-004)
+                        Wochenplan-Anzeige (REQ-004), Profil-Tab,
+                        Rezept-Detail-Modal
 services/
   matching-service/    Makro-Berechnung (REQ-002) + Rezept-Matching (REQ-003)
   grocery-service/      Einkaufsliste (REQ-005), Kochtage-Vorschlag (REQ-006),
@@ -57,6 +58,18 @@ Breite Abdeckung würde dieses Ziel verwässern.
 (separates Repo, [github.com/jf-bht/nutrition-tracker](https://github.com/jf-bht/nutrition-tracker))
 per REST an.
 
+**Hinweis zur REST-Wiederverwendung:** `matching-service`s `GET
+/v1/recipes/:id` liefert immer die unskalierte Basis-Portion aus dem
+Rezept-Pool, nicht die für eine konkrete Mahlzeit ggf. über die
+Kohlenhydrat-Quelle skalierte Menge (Portions-Skalierung, siehe
+[docs/SWT_FINAL_STEP09](./docs/SWT_FINAL_STEP09_teilC-mealtype-portionscaling.md)).
+Sowohl die Einkaufslisten-Aggregation (`grocery-service`) als auch das
+Rezept-Detail-Modal (`apps/mobile`) verwenden deshalb bewusst das bereits
+geladene, ggf. skalierte Rezept-Objekt aus dem Wochenplan statt diesen
+Endpoint erneut aufzurufen — sonst würden Wochenplan, Einkaufsliste und
+Detailansicht unterschiedliche Mengen für dieselbe Mahlzeit zeigen (siehe
+[docs/SWT_FINAL_STEP13](./docs/SWT_FINAL_STEP13_teilC-rezept-detail.md)).
+
 Weiterer Kontext zu Techstack-Entscheidungen: [Constitution/techstack.md](./Constitution/techstack.md).
 Roadmap / Iterationsplanung: [Constitution/roadmap.md](./Constitution/roadmap.md).
 
@@ -87,6 +100,8 @@ npm run web --workspace=@meals/mobile   # oder: ios / android
 Scope für diese Abgabe vollständig umgesetzt: End-to-End-Durchlauf
 Onboarding → Makro-Berechnung → Rezept-Matching → Wochenplan →
 Einkaufsliste (REQ-001–005) über alle drei Module, plus REQ-008
-vereinfacht (RLS-Policy). Details zu jedem Schritt, Architekturentscheidungen
-und gefundenen/gefixten Bugs siehe [docs/](./docs) (`SWT_FINAL_STEP01` bis
-`STEP11`).
+vereinfacht (RLS-Policy). Zusätzlich: Splash-Screen, Profil-Tab
+(Onboarding-Daten + Makros, read-only) und ein Rezept-Detail-Modal im
+Wochenplan. Details zu jedem Schritt, Architekturentscheidungen und
+gefundenen/gefixten Bugs siehe [docs/](./docs) (`SWT_FINAL_STEP01` bis
+`STEP13`).
