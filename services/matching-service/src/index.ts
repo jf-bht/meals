@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import { ZodError } from "zod";
 import { calculateMacros, MacroInput } from "./macros.js";
+import { matchRecipe, MatchInput } from "./matching.js";
 
 const app = Fastify({ logger: true });
 
@@ -22,8 +23,23 @@ app.post("/v1/macros", async (request, reply) => {
   }
 });
 
-// Placeholder — Business-Logik für REQ-003 (Rezept-Matching) folgt in
-// einem späteren Schritt.
+// REQ-003: Rezept-Matching
+app.post("/v1/recipes/match", async (request, reply) => {
+  try {
+    const input = MatchInput.parse(request.body);
+    return matchRecipe(input);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      reply.code(400);
+      return { error: "invalid_input", issues: err.issues };
+    }
+    if (err instanceof Error && err.message === "no_candidates") {
+      reply.code(404);
+      return { error: "no_candidates" };
+    }
+    throw err;
+  }
+});
 
 const port = Number(process.env.PORT ?? 3001);
 
