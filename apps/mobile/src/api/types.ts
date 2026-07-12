@@ -53,6 +53,7 @@ export interface MatchInput {
   allergies: string[];
   targetMacros: RecipeMacros;
   recentRecipeIds: string[];
+  relaxMacros?: boolean;
 }
 
 export interface MatchResult {

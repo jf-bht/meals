@@ -36,6 +36,7 @@ export interface GroceryListGroup {
 const CATEGORY_BY_INGREDIENT: Record<string, GroceryCategory> = {
   "hähnchenbrust": "protein",
   "rinderhack": "protein",
+  "rindersteak": "protein",
   "lachsfilet": "protein",
   "putenbrust": "protein",
   "tofu": "protein",
@@ -51,6 +52,7 @@ const CATEGORY_BY_INGREDIENT: Record<string, GroceryCategory> = {
   "quinoa": "grains",
   "couscous": "grains",
   "vollkornbrot": "grains",
+  "haferflocken": "grains",
   "brokkoli": "produce",
   "süßkartoffel": "produce",
   "zwiebel": "produce",
@@ -58,6 +60,7 @@ const CATEGORY_BY_INGREDIENT: Record<string, GroceryCategory> = {
   "zucchini": "produce",
   "kartoffel": "produce",
   "paprika": "produce",
+  "beeren": "produce",
   "olivenöl": "pantry",
   "currypulver": "pantry",
   "tahin": "pantry",

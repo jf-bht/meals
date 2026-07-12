@@ -8,6 +8,7 @@ const baseInput: MatchInput = {
   allergies: [],
   targetMacros: { kcal: 550, proteinG: 40, fatG: 15, carbsG: 55 },
   recentRecipeIds: [],
+  relaxMacros: false,
 };
 
 test("Veganer Nutzer bekommt nur vegane Rezepte", () => {
@@ -80,6 +81,31 @@ test("matchRecipe wirft, wenn kein Rezept zu den Kriterien passt", () => {
       recentRecipeIds: ["r-08"],
     });
   });
+});
+
+test("relaxMacros ignoriert nur die Kalorien-Toleranz, nicht Diät/Allergien", () => {
+  const strict = filterCandidates({
+    ...baseInput,
+    targetMacros: { kcal: 5000, proteinG: 400, fatG: 200, carbsG: 600 },
+  });
+  assert.equal(strict.length, 0);
+
+  const relaxed = filterCandidates({
+    ...baseInput,
+    targetMacros: { kcal: 5000, proteinG: 400, fatG: 200, carbsG: 600 },
+    relaxMacros: true,
+  });
+  assert.ok(relaxed.length > 0);
+  assert.ok(relaxed.every((r) => ["omnivore", "vegetarian", "vegan"].includes(r.dietType)));
+
+  const relaxedButAllergyExcluded = filterCandidates({
+    ...baseInput,
+    dietType: "vegan",
+    allergies: ["sesame"],
+    targetMacros: { kcal: 5000, proteinG: 400, fatG: 200, carbsG: 600 },
+    relaxMacros: true,
+  });
+  assert.ok(relaxedButAllergyExcluded.every((r) => !r.allergens.includes("sesame")));
 });
 
 test("Ungültiger dietType wird von Zod abgelehnt", () => {

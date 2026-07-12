@@ -27,6 +27,13 @@ export const MatchInput = z.object({
   // grocery-service oder die Mobile-App) liefert den relevanten Zeitraum
   // selbst an.
   recentRecipeIds: z.array(z.string()).default([]),
+  // Letzter Fallback für Aufrufer (siehe apps/mobile/src/domain/weekPlan.ts):
+  // überspringt nur die Kalorien-Toleranz, Diät-Typ und Allergien bleiben
+  // weiterhin hart. Ohne dieses Ventil kann der kleine Demo-Rezept-Pool bei
+  // Körperdaten/Zielen außerhalb seiner Kalorien-Bandbreite (aktuell
+  // 380–850 kcal/Rezept) für jeden Slot 404 liefern, obwohl fachlich
+  // korrekt gefilterte Rezepte existieren.
+  relaxMacros: z.boolean().default(false),
 });
 export type MatchInput = z.infer<typeof MatchInput>;
 
@@ -73,7 +80,7 @@ export function filterCandidates(input: MatchInput, pool: Recipe[] = RECIPE_POOL
     if (!allowedDiets.has(recipe.dietType)) return false;
     if (recipe.allergens.some((a) => input.allergies.includes(a))) return false;
     if (recentIds.has(recipe.id)) return false; // 5-Tage-Wiederholungssperre
-    if (!matchesMacros(recipe.macrosPerPortion, input.targetMacros)) return false;
+    if (!input.relaxMacros && !matchesMacros(recipe.macrosPerPortion, input.targetMacros)) return false;
     return true;
   });
 }

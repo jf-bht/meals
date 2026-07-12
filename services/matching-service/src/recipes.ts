@@ -194,4 +194,33 @@ export const RECIPE_POOL: Recipe[] = [
       { name: "Tahin", quantity: 1, unit: "EL" },
     ],
   },
+  // r-13/r-14 erweitern die Kalorien-Bandbreite des Pools weiter nach unten
+  // (leichte Mahlzeit) und oben (großer Esser/hoher Bedarf), damit mehr
+  // reale Onboarding-Profile ohne relaxMacros-Fallback einen Treffer
+  // finden. Siehe docs/SWT_FINAL_STEP05 / STEP06.
+  {
+    id: "r-13",
+    name: "Overnight Oats mit Beeren",
+    dietType: "vegetarian",
+    allergens: ["dairy"],
+    macrosPerPortion: { kcal: 380, proteinG: 18, fatG: 10, carbsG: 55 },
+    ingredientsPerPortion: [
+      { name: "Haferflocken", quantity: 60, unit: "g" },
+      { name: "Naturjoghurt", quantity: 100, unit: "g" },
+      { name: "Beeren", quantity: 80, unit: "g" },
+    ],
+  },
+  {
+    id: "r-14",
+    name: "Rindersteak mit Ofengemüse",
+    dietType: "omnivore",
+    allergens: [],
+    macrosPerPortion: { kcal: 850, proteinG: 55, fatG: 35, carbsG: 50 },
+    ingredientsPerPortion: [
+      { name: "Rindersteak", quantity: 200, unit: "g" },
+      { name: "Süßkartoffel", quantity: 200, unit: "g" },
+      { name: "Brokkoli", quantity: 150, unit: "g" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
+  },
 ];

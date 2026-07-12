@@ -33,33 +33,42 @@ export async function generateWeekPlan(params: {
     for (const mealType of MEAL_TYPES) {
       const recentRecipeIds = usedRecipes.filter((u) => day - u.day < NO_REPEAT_DAYS).map((u) => u.id);
 
+      // Drei Eskalationsstufen gegen den kleinen Demo-Rezept-Pool: (1) exakt
+      // wie angefragt, (2) 5-Tage-Sperre ignorieren (Pool zu klein für 21
+      // wiederholungsfreie Slots), (3) zusätzlich die Kalorien-Toleranz
+      // ignorieren (relaxMacros — Diät/Allergien bleiben immer hart). Erst
+      // wenn selbst Stufe 3 keinen Kandidaten findet, existiert wirklich
+      // kein zur Diät/Allergie-Kombination passendes Rezept im Pool.
+      const attempts = [
+        { recentRecipeIds, relaxMacros: false },
+        { recentRecipeIds: [], relaxMacros: false },
+        { recentRecipeIds: [], relaxMacros: true },
+      ];
+
       let recipe;
-      try {
-        recipe = (
-          await matchRecipe({
-            dietType: params.dietType,
-            allergies: params.allergies,
-            targetMacros: perMealTarget,
-            recentRecipeIds,
-          })
-        ).recipe;
-      } catch (err) {
-        // Der Demo-Rezept-Pool im matching-service hat nur 10 Einträge —
-        // bei 21 Slots/Woche kann die 5-Tage-Sperre den Pool erschöpfen.
-        // Pragmatischer Fallback für den Prototyp: Sperre einmalig
-        // ignorieren, statt den ganzen Plan abzubrechen.
-        if (err instanceof Error && err.message.includes("request_failed:404")) {
+      let lastError: unknown;
+      for (const attempt of attempts) {
+        try {
           recipe = (
             await matchRecipe({
               dietType: params.dietType,
               allergies: params.allergies,
               targetMacros: perMealTarget,
-              recentRecipeIds: [],
+              ...attempt,
             })
           ).recipe;
-        } else {
-          throw err;
+          break;
+        } catch (err) {
+          lastError = err;
+          if (!(err instanceof Error && err.message.includes("request_failed:404"))) {
+            throw err;
+          }
         }
+      }
+      if (!recipe) {
+        throw lastError instanceof Error
+          ? lastError
+          : new Error("Kein Rezept für diese Diät/Allergie-Kombination im Demo-Pool vorhanden.");
       }
 
       usedRecipes.push({ id: recipe.id, day });
