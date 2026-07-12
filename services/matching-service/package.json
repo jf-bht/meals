@@ -10,10 +10,12 @@
     "build": "tsc -p .",
     "start": "node dist/index.js",
     "typecheck": "tsc -p . --noEmit",
-    "lint": "echo \"(placeholder) no linter configured yet\""
+    "lint": "echo \"(placeholder) no linter configured yet\"",
+    "test": "node --import tsx --test src/**/*.test.ts"
   },
   "dependencies": {
-    "fastify": "^5.1.0"
+    "fastify": "^5.1.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
