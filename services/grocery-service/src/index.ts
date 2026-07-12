@@ -20,6 +20,17 @@ const GroceryListInput = z.object({
       z.object({
         recipeId: z.string(),
         portions: z.number().int().positive(),
+        // Optional: tatsächlich verwendete (ggf. skalierte) Zutatenmengen
+        // für diese Mahlzeit — siehe matchingClient.ts.
+        ingredientsPerPortion: z
+          .array(
+            z.object({
+              name: z.string(),
+              quantity: z.number(),
+              unit: z.string(),
+            }),
+          )
+          .optional(),
       }),
     )
     .min(1),

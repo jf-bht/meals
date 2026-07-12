@@ -46,27 +46,41 @@ export function createMatchingServiceClient(baseUrl: string, fetchImpl: typeof f
 export interface WeekPlanRequestEntry {
   recipeId: string;
   portions: number;
+  // Optional: die tatsächlich verwendeten Zutatenmengen für diese
+  // Mahlzeit. matching-service kann die Kohlenhydrat-Quelle pro Mahlzeit
+  // automatisch skalieren (siehe matching-service/src/portionScaling.ts,
+  // REQ-002 "Kohlenhydrate = Rest" auf Rezept-Ebene angewendet) — die
+  // Basis-Zutaten unter derselben recipeId beim erneuten Abruf per
+  // GET /v1/recipes/:id wären dann nicht mehr korrekt. Ist dieses Feld
+  // gesetzt, wird es verwendet und recipeId nicht erneut abgerufen.
+  ingredientsPerPortion?: RecipeForGroceryList["ingredientsPerPortion"];
 }
 
 /**
- * REQ-005 Orchestrierung: pro (eindeutiger) Rezept-ID im Wochenplan ein
- * Rezept vom matching-service laden, dann Zutaten aggregieren und nach
- * Kategorie gruppieren. Rezepte werden nur einmal pro ID geladen, auch
- * wenn sie mehrfach im Wochenplan vorkommen (z. B. Meal Prep).
+ * REQ-005 Orchestrierung: pro Wochenplan-Eintrag entweder die mitgelieferten
+ * (ggf. skalierten) Zutaten verwenden, oder — falls nicht mitgeliefert —
+ * das Rezept per REST vom matching-service laden (pro eindeutiger
+ * Rezept-ID nur einmal, auch wenn sie mehrfach im Wochenplan vorkommt).
+ * Danach: Zutaten aggregieren und nach Kategorie gruppieren.
  */
 export async function buildGroceryList(
   weekPlan: WeekPlanRequestEntry[],
   fetchRecipe: FetchRecipeFn,
 ): Promise<GroceryListGroup[]> {
-  const uniqueRecipeIds = [...new Set(weekPlan.map((entry) => entry.recipeId))];
+  const recipeIdsToFetch = [
+    ...new Set(weekPlan.filter((entry) => !entry.ingredientsPerPortion).map((entry) => entry.recipeId)),
+  ];
   const recipesById = new Map<string, RecipeForGroceryList>();
 
-  for (const recipeId of uniqueRecipeIds) {
+  for (const recipeId of recipeIdsToFetch) {
     recipesById.set(recipeId, await fetchRecipe(recipeId));
   }
 
   const entries: WeekPlanEntry[] = weekPlan.map((planEntry) => ({
-    recipe: recipesById.get(planEntry.recipeId)!,
+    recipe: {
+      id: planEntry.recipeId,
+      ingredientsPerPortion: planEntry.ingredientsPerPortion ?? recipesById.get(planEntry.recipeId)!.ingredientsPerPortion,
+    },
     portions: planEntry.portions,
   }));
 

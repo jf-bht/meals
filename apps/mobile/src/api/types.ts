@@ -39,11 +39,14 @@ export interface Ingredient {
   unit: string;
 }
 
+export type MealType = "breakfast" | "lunch" | "dinner";
+
 export interface Recipe {
   id: string;
   name: string;
   dietType: DietType;
   allergens: string[];
+  mealTypes: MealType[];
   macrosPerPortion: RecipeMacros;
   ingredientsPerPortion: Ingredient[];
 }
@@ -54,14 +57,14 @@ export interface MatchInput {
   targetMacros: RecipeMacros;
   recentRecipeIds: string[];
   relaxMacros?: boolean;
+  mealType?: MealType;
 }
 
 export interface MatchResult {
   recipe: Recipe;
   candidateCount: number;
+  scaled: boolean;
 }
-
-export type MealType = "breakfast" | "lunch" | "dinner";
 
 export interface WeekPlanMeal {
   day: number; // 0 = Montag … 6 = Sonntag

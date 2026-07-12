@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { DietType, RECIPE_POOL, type Recipe, type RecipeMacros } from "./recipes.js";
+import { DietType, MealType, RECIPE_POOL, type Recipe, type RecipeMacros } from "./recipes.js";
+import { scaleRecipeToTarget } from "./portionScaling.js";
 
 // Diät-Hierarchie: welche Rezept-Diät-Typen darf ein Nutzer mit gegebenem
 // Diät-Typ essen? vegan ⊂ vegetarian ⊂ omnivore.
@@ -34,12 +35,19 @@ export const MatchInput = z.object({
   // 380–850 kcal/Rezept) für jeden Slot 404 liefern, obwohl fachlich
   // korrekt gefilterte Rezepte existieren.
   relaxMacros: z.boolean().default(false),
+  // Optional: nur Rezepte, die für diese Tagesmahlzeit taggt sind (z. B.
+  // kein Rindersteak zum Frühstück). Ohne Angabe kommen Rezepte aller
+  // Mahlzeiten-Tags in Frage.
+  mealType: MealType.optional(),
 });
 export type MatchInput = z.infer<typeof MatchInput>;
 
 export interface MatchResult {
   recipe: Recipe;
   candidateCount: number;
+  // true, wenn die Kohlenhydrat-Quelle des Rezepts automatisch an das
+  // Kalorienziel angepasst wurde (siehe portionScaling.ts).
+  scaled: boolean;
 }
 
 function isWithinTolerance(actual: number, target: number, tolerance: number): boolean {
@@ -80,6 +88,7 @@ export function filterCandidates(input: MatchInput, pool: Recipe[] = RECIPE_POOL
     if (!allowedDiets.has(recipe.dietType)) return false;
     if (recipe.allergens.some((a) => input.allergies.includes(a))) return false;
     if (recentIds.has(recipe.id)) return false; // 5-Tage-Wiederholungssperre
+    if (input.mealType && !recipe.mealTypes.includes(input.mealType)) return false;
     if (!input.relaxMacros && !matchesMacros(recipe.macrosPerPortion, input.targetMacros)) return false;
     return true;
   });
@@ -121,9 +130,15 @@ export function matchRecipe(
   if (candidates.length === 0) {
     throw new Error("no_candidates");
   }
+  const picked = weightedPick(candidates, input.targetMacros, rng);
+  // Auswahl erfolgt weiterhin über die Basis-Makros (macroDistance) — die
+  // Skalierung ist eine Nachbearbeitung, die das gewählte Rezept näher an
+  // das exakte Kalorienziel bringt, nicht Teil der Auswahl-Gewichtung.
+  const { recipe, scaled } = scaleRecipeToTarget(picked, input.targetMacros);
   return {
-    recipe: weightedPick(candidates, input.targetMacros, rng),
+    recipe,
     candidateCount: candidates.length,
+    scaled,
   };
 }
 

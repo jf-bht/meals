@@ -44,7 +44,17 @@ export default function App() {
   async function loadGroceryList(weekPlan: WeekPlanMeal[]) {
     setGroceryLoading(true);
     try {
-      const { groups } = await fetchGroceryList(weekPlan.map((m) => ({ recipeId: m.recipe.id, portions: 1 })));
+      // Tatsächliche (ggf. skalierte) Zutatenmengen mitschicken statt nur
+      // die recipeId — matching-service passt die Kohlenhydrat-Quelle pro
+      // Mahlzeit an das Kalorienziel an (siehe portionScaling.ts), die
+      // Einkaufsliste muss diese Menge zeigen, nicht die Basis-Portion.
+      const { groups } = await fetchGroceryList(
+        weekPlan.map((m) => ({
+          recipeId: m.recipe.id,
+          portions: 1,
+          ingredientsPerPortion: m.recipe.ingredientsPerPortion,
+        })),
+      );
       setGroceryGroups(groups);
     } catch {
       setGroceryGroups([]);

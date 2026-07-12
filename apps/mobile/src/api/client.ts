@@ -1,4 +1,4 @@
-import type { MacroInput, MacroResult, MatchInput, MatchResult, GroceryListGroup } from "./types";
+import type { MacroInput, MacroResult, MatchInput, MatchResult, GroceryListGroup, Ingredient } from "./types";
 
 // EXPO_PUBLIC_-Variablen werden von Expo zur Build-Zeit eingebettet (siehe
 // .env.example). Fallback auf localhost für iOS-Simulator/Web — im
@@ -29,7 +29,7 @@ export function matchRecipe(input: MatchInput): Promise<MatchResult> {
 }
 
 export function fetchGroceryList(
-  weekPlan: { recipeId: string; portions: number }[],
+  weekPlan: { recipeId: string; portions: number; ingredientsPerPortion?: Ingredient[] }[],
 ): Promise<{ groups: GroceryListGroup[] }> {
   return postJson<{ groups: GroceryListGroup[] }>(`${GROCERY_SERVICE_URL}/v1/grocery-list`, { weekPlan });
 }

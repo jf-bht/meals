@@ -59,3 +59,42 @@ test("buildGroceryList propagiert einen Fehler, wenn ein Rezept nicht existiert"
     /recipe_not_found/,
   );
 });
+
+test("buildGroceryList nutzt mitgelieferte ingredientsPerPortion ohne erneuten Fetch (skalierte Mahlzeiten)", async () => {
+  const callLog: string[] = [];
+  const groups = await buildGroceryList(
+    [
+      {
+        recipeId: "r-01",
+        portions: 1,
+        // Skalierte Menge (z. B. 250g statt Basis-80g Reis) — muss 1:1
+        // übernommen werden, nicht die Basis-Menge von matching-service.
+        ingredientsPerPortion: [
+          { name: "Hähnchenbrust", quantity: 150, unit: "g" },
+          { name: "Reis", quantity: 250, unit: "g" },
+        ],
+      },
+    ],
+    fakeFetchRecipe(callLog),
+  );
+
+  assert.equal(callLog.length, 0, "fetchRecipe darf nicht aufgerufen werden, wenn Zutaten mitgeliefert wurden");
+  const reis = groups.flatMap((g) => g.items).find((i) => i.name === "Reis");
+  assert.equal(reis!.quantity, 250);
+});
+
+test("buildGroceryList mischt Einträge mit und ohne mitgelieferte Zutaten korrekt", async () => {
+  const callLog: string[] = [];
+  const groups = await buildGroceryList(
+    [
+      { recipeId: "r-01", portions: 1, ingredientsPerPortion: [{ name: "Reis", quantity: 300, unit: "g" }] },
+      { recipeId: "r-08", portions: 1 },
+    ],
+    fakeFetchRecipe(callLog),
+  );
+
+  assert.deepEqual(callLog, ["r-08"]);
+  const allItems = groups.flatMap((g) => g.items);
+  assert.equal(allItems.find((i) => i.name === "Reis")!.quantity, 300);
+  assert.ok(allItems.find((i) => i.name === "Rote Linsen"));
+});

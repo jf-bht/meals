@@ -62,6 +62,7 @@ export async function generateWeekPlan(params: {
               dietType: params.dietType,
               allergies: params.allergies,
               targetMacros: perMealTarget,
+              mealType,
               ...attempt,
             })
           ).recipe;

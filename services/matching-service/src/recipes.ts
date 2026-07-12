@@ -5,6 +5,9 @@ import { z } from "zod";
 export const DietType = z.enum(["omnivore", "vegetarian", "vegan"]);
 export type DietType = z.infer<typeof DietType>;
 
+export const MealType = z.enum(["breakfast", "lunch", "dinner"]);
+export type MealType = z.infer<typeof MealType>;
+
 export interface RecipeMacros {
   kcal: number;
   proteinG: number;
@@ -23,6 +26,10 @@ export interface Recipe {
   name: string;
   dietType: DietType;
   allergens: string[];
+  // Für welche Mahlzeiten des Tages ist das Rezept geeignet? Verhindert
+  // z. B. "Rindersteak" als Frühstücksvorschlag. Der kleine Demo-Pool hat
+  // bewusst nur 3 Frühstücks-Rezepte — realistische Einschränkung, kein Bug.
+  mealTypes: MealType[];
   macrosPerPortion: RecipeMacros;
   // Mengen gelten pro 1 Portion — der Aufrufer (grocery-service) skaliert
   // mit der tatsächlichen Portionsanzahl aus dem Wochenplan.
@@ -39,6 +46,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Hähnchen mit Reis und Brokkoli",
     dietType: "omnivore",
     allergens: [],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 550, proteinG: 45, fatG: 12, carbsG: 60 },
     ingredientsPerPortion: [
       { name: "Hähnchenbrust", quantity: 150, unit: "g" },
@@ -52,6 +60,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Rindfleisch-Pfanne mit Süßkartoffel",
     dietType: "omnivore",
     allergens: [],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 620, proteinG: 40, fatG: 22, carbsG: 55 },
     ingredientsPerPortion: [
       { name: "Rinderhack", quantity: 150, unit: "g" },
@@ -65,6 +74,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Lachs mit Quinoa",
     dietType: "omnivore",
     allergens: ["fish"],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 580, proteinG: 38, fatG: 24, carbsG: 45 },
     ingredientsPerPortion: [
       { name: "Lachsfilet", quantity: 150, unit: "g" },
@@ -78,6 +88,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Linsen-Curry mit Naturjoghurt",
     dietType: "vegetarian",
     allergens: ["dairy"],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 480, proteinG: 22, fatG: 14, carbsG: 65 },
     ingredientsPerPortion: [
       { name: "Linsen", quantity: 100, unit: "g" },
@@ -91,6 +102,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Feta-Ofengemüse mit Couscous",
     dietType: "vegetarian",
     allergens: ["dairy", "gluten"],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 520, proteinG: 18, fatG: 20, carbsG: 62 },
     ingredientsPerPortion: [
       { name: "Feta", quantity: 60, unit: "g" },
@@ -104,6 +116,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Kichererbsen-Bowl mit Tahin",
     dietType: "vegan",
     allergens: ["sesame"],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 500, proteinG: 20, fatG: 18, carbsG: 60 },
     ingredientsPerPortion: [
       { name: "Kichererbsen", quantity: 150, unit: "g" },
@@ -117,6 +130,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Tofu-Wok mit Erdnusssauce",
     dietType: "vegan",
     allergens: ["soy", "peanut"],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 540, proteinG: 28, fatG: 20, carbsG: 55 },
     ingredientsPerPortion: [
       { name: "Tofu", quantity: 150, unit: "g" },
@@ -130,6 +144,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Rote-Linsen-Dal mit Vollkornreis",
     dietType: "vegan",
     allergens: [],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 470, proteinG: 21, fatG: 10, carbsG: 70 },
     ingredientsPerPortion: [
       { name: "Rote Linsen", quantity: 100, unit: "g" },
@@ -143,6 +158,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Pute mit Ofenkartoffeln",
     dietType: "omnivore",
     allergens: [],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 560, proteinG: 42, fatG: 15, carbsG: 58 },
     ingredientsPerPortion: [
       { name: "Putenbrust", quantity: 150, unit: "g" },
@@ -155,6 +171,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Gemüse-Omelett mit Vollkornbrot",
     dietType: "vegetarian",
     allergens: ["egg", "gluten"],
+    mealTypes: ["breakfast"],
     macrosPerPortion: { kcal: 490, proteinG: 25, fatG: 22, carbsG: 40 },
     ingredientsPerPortion: [
       { name: "Eier", quantity: 3, unit: "Stück" },
@@ -173,6 +190,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Chili con Carne mit Reis",
     dietType: "omnivore",
     allergens: [],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 720, proteinG: 45, fatG: 25, carbsG: 70 },
     ingredientsPerPortion: [
       { name: "Rinderhack", quantity: 180, unit: "g" },
@@ -186,6 +204,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Falafel-Teller mit Hummus",
     dietType: "vegan",
     allergens: ["sesame"],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 700, proteinG: 24, fatG: 26, carbsG: 85 },
     ingredientsPerPortion: [
       { name: "Kichererbsen", quantity: 180, unit: "g" },
@@ -203,6 +222,7 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Overnight Oats mit Beeren",
     dietType: "vegetarian",
     allergens: ["dairy"],
+    mealTypes: ["breakfast"],
     macrosPerPortion: { kcal: 380, proteinG: 18, fatG: 10, carbsG: 55 },
     ingredientsPerPortion: [
       { name: "Haferflocken", quantity: 60, unit: "g" },
@@ -215,12 +235,30 @@ export const RECIPE_POOL: Recipe[] = [
     name: "Rindersteak mit Ofengemüse",
     dietType: "omnivore",
     allergens: [],
+    mealTypes: ["lunch", "dinner"],
     macrosPerPortion: { kcal: 850, proteinG: 55, fatG: 35, carbsG: 50 },
     ingredientsPerPortion: [
       { name: "Rindersteak", quantity: 200, unit: "g" },
       { name: "Süßkartoffel", quantity: 200, unit: "g" },
       { name: "Brokkoli", quantity: 150, unit: "g" },
       { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
+  },
+  // r-15 ergänzt eine dritte Frühstücksoption — der Pool hatte bislang nur
+  // r-10 und r-13 für mealTypes: ["breakfast"], was Wiederholungen bei den
+  // Frühstücken über eine Woche wahrscheinlicher machte als bei
+  // Mittag-/Abendessen (11 Optionen).
+  {
+    id: "r-15",
+    name: "Quark mit Müsli und Apfel",
+    dietType: "vegetarian",
+    allergens: ["dairy", "gluten"],
+    mealTypes: ["breakfast"],
+    macrosPerPortion: { kcal: 420, proteinG: 28, fatG: 8, carbsG: 52 },
+    ingredientsPerPortion: [
+      { name: "Magerquark", quantity: 200, unit: "g" },
+      { name: "Müsli", quantity: 50, unit: "g" },
+      { name: "Apfel", quantity: 1, unit: "Stück" },
     ],
   },
 ];
