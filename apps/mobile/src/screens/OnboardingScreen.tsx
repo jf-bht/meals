@@ -39,6 +39,12 @@ const ALLERGY_OPTIONS: { value: string; label: string }[] = [
 ];
 
 export interface OnboardingResult {
+  gender: Gender;
+  ageYears: number;
+  heightCm: number;
+  weightKg: number;
+  activityLevel: ActivityLevel;
+  goal: Goal;
   dietType: DietType;
   allergies: string[];
   macros: MacroResult;
@@ -123,7 +129,17 @@ export function OnboardingScreen({ onComplete }: { onComplete: (result: Onboardi
         activityLevel,
         goal,
       });
-      onComplete({ dietType, allergies, macros });
+      onComplete({
+        gender,
+        ageYears: Number(age),
+        heightCm: Number(height),
+        weightKg: Number(weight),
+        activityLevel,
+        goal,
+        dietType,
+        allergies,
+        macros,
+      });
     } catch (err) {
       setErrorMessage(
         `matching-service nicht erreichbar (Port 3001). Läuft der Service? Details: ${

@@ -1,13 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../theme";
 
-export type MainScreen = "plan" | "grocery";
+export type MainScreen = "plan" | "grocery" | "profile";
 
-const TABS: { key: MainScreen | "home" | "profile"; label: string; icon: string; enabled: boolean }[] = [
+const TABS: { key: MainScreen | "home"; label: string; icon: string; enabled: boolean }[] = [
   { key: "home", label: "Home", icon: "⌂", enabled: false },
   { key: "plan", label: "Plan", icon: "▤", enabled: true },
   { key: "grocery", label: "Liste", icon: "▾", enabled: true },
-  { key: "profile", label: "Profil", icon: "○", enabled: false },
+  { key: "profile", label: "Profil", icon: "○", enabled: true },
 ];
 
 export function BottomNav({ active, onChange }: { active: MainScreen; onChange: (screen: MainScreen) => void }) {

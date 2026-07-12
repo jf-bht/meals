@@ -5,6 +5,7 @@ import { SplashScreen } from "./src/screens/SplashScreen";
 import { OnboardingScreen, type OnboardingResult } from "./src/screens/OnboardingScreen";
 import { WochenplanScreen } from "./src/screens/WochenplanScreen";
 import { EinkaufslisteScreen } from "./src/screens/EinkaufslisteScreen";
+import { ProfilScreen } from "./src/screens/ProfilScreen";
 import { BottomNav, type MainScreen } from "./src/components/BottomNav";
 import { PrimaryButton } from "./src/components/PrimaryButton";
 import { generateWeekPlan } from "./src/domain/weekPlan";
@@ -19,8 +20,9 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeScreen, setActiveScreen] = useState<MainScreen>("plan");
 
-  const [profile, setProfile] = useState<{ dietType: DietType; allergies: string[] } | null>(null);
-  const [macros, setMacros] = useState<MacroResult | null>(null);
+  // Vollständige Onboarding-Angaben + berechnete Makros — Grundlage für
+  // ProfilScreen (reine Anzeige) und für "Plan neu generieren".
+  const [profile, setProfile] = useState<OnboardingResult | null>(null);
   const [meals, setMeals] = useState<WeekPlanMeal[]>([]);
   const [groceryGroups, setGroceryGroups] = useState<GroceryListGroup[]>([]);
   const [groceryLoading, setGroceryLoading] = useState(false);
@@ -31,8 +33,6 @@ export default function App() {
     try {
       const weekPlan = await generateWeekPlan({ dietType, allergies, dailyMacros: macroResult });
       setMeals(weekPlan);
-      setProfile({ dietType, allergies });
-      setMacros(macroResult);
       setState("ready");
       setActiveScreen("plan");
       void loadGroceryList(weekPlan);
@@ -65,14 +65,15 @@ export default function App() {
   }
 
   function handleOnboardingComplete(result: OnboardingResult) {
+    setProfile(result);
     void runPlanGeneration(result.dietType, result.allergies, result.macros);
   }
 
   // REQ-004: "Nutzer kann den Plan mit einem Tap neu generieren" — nutzt
   // dieselben Onboarding-Eingaben (Diät/Allergien/Makro-Ziel) erneut.
   function handleRegenerate() {
-    if (!profile || !macros) return;
-    void runPlanGeneration(profile.dietType, profile.allergies, macros);
+    if (!profile) return;
+    void runPlanGeneration(profile.dietType, profile.allergies, profile.macros);
   }
 
   return (
@@ -99,14 +100,16 @@ export default function App() {
         </View>
       ) : null}
 
-      {state === "ready" ? (
+      {state === "ready" && profile ? (
         <View style={styles.flexFill}>
           <View style={styles.flexFill}>
             {activeScreen === "plan" ? (
               <WochenplanScreen meals={meals} loading={false} onRegenerate={handleRegenerate} />
-            ) : (
+            ) : null}
+            {activeScreen === "grocery" ? (
               <EinkaufslisteScreen groups={groceryGroups} loading={groceryLoading} />
-            )}
+            ) : null}
+            {activeScreen === "profile" ? <ProfilScreen profile={profile} /> : null}
           </View>
           <BottomNav active={activeScreen} onChange={setActiveScreen} />
         </View>
