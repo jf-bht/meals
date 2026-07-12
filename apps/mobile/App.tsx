@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { SplashScreen } from "./src/screens/SplashScreen";
 import { OnboardingScreen, type OnboardingResult } from "./src/screens/OnboardingScreen";
 import { WochenplanScreen } from "./src/screens/WochenplanScreen";
 import { EinkaufslisteScreen } from "./src/screens/EinkaufslisteScreen";
@@ -11,10 +12,10 @@ import { fetchGroceryList } from "./src/api/client";
 import type { DietType, GroceryListGroup, MacroResult, WeekPlanMeal } from "./src/api/types";
 import { colors, spacing, typography } from "./src/theme";
 
-type AppState = "onboarding" | "generating" | "ready" | "error";
+type AppState = "splash" | "onboarding" | "generating" | "ready" | "error";
 
 export default function App() {
-  const [state, setState] = useState<AppState>("onboarding");
+  const [state, setState] = useState<AppState>("splash");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeScreen, setActiveScreen] = useState<MainScreen>("plan");
 
@@ -77,6 +78,8 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
+      {state === "splash" ? <SplashScreen onStart={() => setState("onboarding")} /> : null}
+
       {state === "onboarding" ? <OnboardingScreen onComplete={handleOnboardingComplete} /> : null}
 
       {state === "generating" ? (
