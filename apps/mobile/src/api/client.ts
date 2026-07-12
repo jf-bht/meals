@@ -1,4 +1,4 @@
-import type { MacroInput, MacroResult, MatchInput, MatchResult, GroceryListGroup, Ingredient } from "./types";
+import type { MacroInput, MacroResult, MatchInput, MatchResult, GroceryListGroup, Ingredient, Recipe } from "./types";
 
 // EXPO_PUBLIC_-Variablen werden von Expo zur Build-Zeit eingebettet (siehe
 // .env.example). Fallback auf localhost für iOS-Simulator/Web — im
@@ -20,12 +20,25 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function getJson<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`request_failed:${response.status}:${text}`);
+  }
+  return response.json() as Promise<T>;
+}
+
 export function calculateMacros(input: MacroInput): Promise<MacroResult> {
   return postJson<MacroResult>(`${MATCHING_SERVICE_URL}/v1/macros`, input);
 }
 
 export function matchRecipe(input: MatchInput): Promise<MatchResult> {
   return postJson<MatchResult>(`${MATCHING_SERVICE_URL}/v1/recipes/match`, input);
+}
+
+export function fetchRecipes(): Promise<Recipe[]> {
+  return getJson<Recipe[]>(`${MATCHING_SERVICE_URL}/v1/recipes`);
 }
 
 export function fetchGroceryList(

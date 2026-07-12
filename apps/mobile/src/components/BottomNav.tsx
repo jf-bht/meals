@@ -1,10 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../theme";
 
-export type MainScreen = "plan" | "grocery" | "profile";
+export type MainScreen = "home" | "plan" | "grocery" | "profile";
 
-const TABS: { key: MainScreen | "home"; label: string; icon: string; enabled: boolean }[] = [
-  { key: "home", label: "Home", icon: "⌂", enabled: false },
+const TABS: { key: MainScreen; label: string; icon: string; enabled: boolean }[] = [
+  { key: "home", label: "Home", icon: "⌂", enabled: true },
   { key: "plan", label: "Plan", icon: "▤", enabled: true },
   { key: "grocery", label: "Liste", icon: "▾", enabled: true },
   { key: "profile", label: "Profil", icon: "○", enabled: true },
@@ -19,7 +19,7 @@ export function BottomNav({ active, onChange }: { active: MainScreen; onChange: 
           <Pressable
             key={tab.key}
             disabled={!tab.enabled}
-            onPress={() => tab.enabled && onChange(tab.key as MainScreen)}
+            onPress={() => tab.enabled && onChange(tab.key)}
             style={styles.tab}
           >
             <Text style={[styles.icon, isActive && styles.iconActive, !tab.enabled && styles.disabled]}>

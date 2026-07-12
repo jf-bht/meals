@@ -3,6 +3,7 @@ import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from "react-n
 import { StatusBar } from "expo-status-bar";
 import { SplashScreen } from "./src/screens/SplashScreen";
 import { OnboardingScreen, type OnboardingResult } from "./src/screens/OnboardingScreen";
+import { HomeScreen } from "./src/screens/HomeScreen";
 import { WochenplanScreen } from "./src/screens/WochenplanScreen";
 import { EinkaufslisteScreen } from "./src/screens/EinkaufslisteScreen";
 import { ProfilScreen } from "./src/screens/ProfilScreen";
@@ -18,7 +19,7 @@ type AppState = "splash" | "onboarding" | "generating" | "ready" | "error";
 export default function App() {
   const [state, setState] = useState<AppState>("splash");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeScreen, setActiveScreen] = useState<MainScreen>("plan");
+  const [activeScreen, setActiveScreen] = useState<MainScreen>("home");
 
   // Vollständige Onboarding-Angaben + berechnete Makros — Grundlage für
   // ProfilScreen (reine Anzeige) und für "Plan neu generieren".
@@ -103,6 +104,7 @@ export default function App() {
       {state === "ready" && profile ? (
         <View style={styles.flexFill}>
           <View style={styles.flexFill}>
+            {activeScreen === "home" ? <HomeScreen /> : null}
             {activeScreen === "plan" ? (
               <WochenplanScreen meals={meals} loading={false} onRegenerate={handleRegenerate} />
             ) : null}

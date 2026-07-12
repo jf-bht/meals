@@ -48,6 +48,15 @@ app.post("/v1/recipes/match", async (request, reply) => {
   }
 });
 
+// Listing des kompletten Rezept-Pools — z. B. für den Home-Tab der
+// Mobile-App (Übersicht aller Rezepte). Bewusst als eigener Collection-
+// Endpoint statt den Client 1..N IDs gegen GET /v1/recipes/:id raten zu
+// lassen: das ID-Schema (aktuell "r-01".."r-15") ist ein internes
+// Implementierungsdetail dieses Services und soll es auch bleiben.
+app.get("/v1/recipes", async () => {
+  return RECIPE_POOL;
+});
+
 // Wird von anderen Services (z. B. grocery-service für REQ-005) per REST
 // abgerufen, um Zutaten für die Einkaufsliste zu ermitteln — kein Import,
 // keine geteilte DB, nur dieser Endpoint.
