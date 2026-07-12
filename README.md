@@ -18,11 +18,14 @@ gemeinsame Supabase-Datenschicht.
 
 ```
 apps/
-  mobile/              React Native / Expo Client (Platzhalter, folgt später)
+  mobile/              React Native / Expo Client — Onboarding (REQ-001),
+                        Wochenplan-Anzeige (REQ-004)
 services/
   matching-service/    Makro-Berechnung (REQ-002) + Rezept-Matching (REQ-003)
   grocery-service/      Einkaufsliste (REQ-005), Kochtage-Vorschlag (REQ-006),
                         Mahlzeit-Swap (REQ-009), Export (REQ-010)
+supabase/
+  migrations/          RLS-Policy für user_profiles (REQ-008, vereinfacht)
 ```
 
 | Requirement | Modul | Status |
@@ -33,7 +36,7 @@ services/
 | [REQ-004 Wochenplan-Anzeige](./Requirements/Wochenplan-Anzeige%20361277f89e7380958bc6ee2c41f074de.md) | `apps/mobile` | Wird implementiert |
 | [REQ-005 Einkaufsliste generieren](./Requirements/Einkaufsliste%20generieren%20361277f89e73803f91fef991a0afe734.md) | `services/grocery-service` | Wird implementiert |
 | [REQ-006 Kochtage-Vorschlag](./Requirements/Kochtage-Vorschlag%20382277f89e7380949923c7e46a1dd670.md) | `services/grocery-service` | Geplant, nicht implementiert |
-| [REQ-008 Datenschutz & DSGVO](./Requirements/Datenschutz%20&%20DSGVO%20382277f89e738094abafff39494874a7.md) | Supabase (RLS) | Vereinfacht |
+| [REQ-008 Datenschutz & DSGVO](./Requirements/Datenschutz%20&%20DSGVO%20382277f89e738094abafff39494874a7.md) | [Supabase-Migration](./supabase/migrations/20260712000000_user_profiles_rls.sql) | Vereinfacht |
 | [REQ-009 Mahlzeit-Swap](./Requirements/Mahlzeit-Swap%20382277f89e7380c69ba9db3aabaea5d0.md) | `services/grocery-service` | Geplant, nicht implementiert |
 | [REQ-010 Einkaufsliste exportieren](./Requirements/Einkaufsliste%20exportieren%20382277f89e73804b9158d95d300056b0.md) | `services/grocery-service` | Geplant, nicht implementiert |
 
@@ -81,5 +84,9 @@ npm run web --workspace=@meals/mobile   # oder: ios / android
 
 ## Status
 
-Aktuell nur lauffähiges Skelett (Health-Check-Endpunkte), noch keine
-Business-Logik. Fortschritt siehe [docs/SWT_FINAL_STEP01_teilC-setup.md](./docs/SWT_FINAL_STEP01_teilC-setup.md).
+Scope für diese Abgabe vollständig umgesetzt: End-to-End-Durchlauf
+Onboarding → Makro-Berechnung → Rezept-Matching → Wochenplan →
+Einkaufsliste (REQ-001–005) über alle drei Module, plus REQ-008
+vereinfacht (RLS-Policy). Details zu jedem Schritt, Architekturentscheidungen
+und gefundenen/gefixten Bugs siehe [docs/](./docs) (`SWT_FINAL_STEP01` bis
+`STEP11`).
