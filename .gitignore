@@ -3,6 +3,7 @@ dist/
 .turbo/
 .env
 .env.local
+*.sqlite3
 *.log
 .DS_Store
 .expo/
