@@ -33,15 +33,23 @@ export async function generateWeekPlan(params: {
     for (const mealType of MEAL_TYPES) {
       const recentRecipeIds = usedRecipes.filter((u) => day - u.day < NO_REPEAT_DAYS).map((u) => u.id);
 
-      // Drei Eskalationsstufen gegen den kleinen Demo-Rezept-Pool: (1) exakt
-      // wie angefragt, (2) 5-Tage-Sperre ignorieren (Pool zu klein für 21
-      // wiederholungsfreie Slots), (3) zusätzlich die Kalorien-Toleranz
-      // ignorieren (relaxMacros — Diät/Allergien bleiben immer hart). Erst
-      // wenn selbst Stufe 3 keinen Kandidaten findet, existiert wirklich
-      // kein zur Diät/Allergie-Kombination passendes Rezept im Pool.
+      // Drei Eskalationsstufen — Reihenfolge bewusst "Variabilität vor
+      // Makro-Genauigkeit" (REQ-003: "Variabilität ohne Wiederholung"):
+      // (1) exakt wie angefragt (Makro-Toleranz + 5-Tage-Sperre).
+      // (2) Makro-Toleranz lockern, 5-Tage-Sperre bleibt aktiv — wenn nur
+      //     ein einziges Rezept im Pool die Kalorien-Toleranz trifft (wie
+      //     bei sehr hohem/niedrigem Bedarf), würde reines "Sperre
+      //     ignorieren" (alte Reihenfolge, Step 06) exakt dasselbe Rezept
+      //     zurückgeben — keine Wiederholungssperre kann greifen, wenn es
+      //     nur einen Kandidaten gibt. Erst die größere Auswahl aus dem
+      //     kompletten Diät/Allergie-kompatiblen Pool macht die Sperre
+      //     wirksam.
+      // (3) Nur wenn selbst das den Pool erschöpft (z. B. sehr enge
+      //     Diät/Allergie-Kombination), zusätzlich die 5-Tage-Sperre
+      //     ignorieren — letzter Ausweg, akzeptiert Wiederholungen.
       const attempts = [
         { recentRecipeIds, relaxMacros: false },
-        { recentRecipeIds: [], relaxMacros: false },
+        { recentRecipeIds, relaxMacros: true },
         { recentRecipeIds: [], relaxMacros: true },
       ];
 
