@@ -25,12 +25,30 @@ services/
                         Mahlzeit-Swap (REQ-009), Export (REQ-010)
 ```
 
-| Modul | Verantwortung | Requirements |
+| Requirement | Modul | Status |
 |---|---|---|
-| `apps/mobile` | UI, Onboarding-Flow, Wochenplan-Anzeige | [REQ-001](./Requirements/Onboarding-Flow%20361277f89e7380ff81d2fbeda6828fa3.md), [REQ-004](./Requirements/Wochenplan-Anzeige%20361277f89e7380958bc6ee2c41f074de.md) |
-| `services/matching-service` | Makro-Berechnung, Rezept-Matching | [REQ-002](./Requirements/Makro-Berechnung%20361277f89e7380dea2c1c34ca646b6df.md), [REQ-003](./Requirements/Rezept-Matching%20361277f89e7380fca88ec215625ec487.md) |
-| `services/grocery-service` | Einkaufsliste, Kochtage, Swap, Export | [REQ-005](./Requirements/Einkaufsliste%20generieren%20361277f89e73803f91fef991a0afe734.md), [REQ-006](./Requirements/Kochtage-Vorschlag%20382277f89e7380949923c7e46a1dd670.md), [REQ-009](./Requirements/Mahlzeit-Swap%20382277f89e7380c69ba9db3aabaea5d0.md), [REQ-010](./Requirements/Einkaufsliste%20exportieren%20382277f89e73804b9158d95d300056b0.md) |
-| Supabase (gemeinsame Datenschicht) | Auth, Postgres, Row-Level-Security | [REQ-008](./Requirements/Datenschutz%20&%20DSGVO%20382277f89e738094abafff39494874a7.md) |
+| [REQ-001 Onboarding-Flow](./Requirements/Onboarding-Flow%20361277f89e7380ff81d2fbeda6828fa3.md) | `apps/mobile` | Wird implementiert |
+| [REQ-002 Makro-Berechnung](./Requirements/Makro-Berechnung%20361277f89e7380dea2c1c34ca646b6df.md) | `services/matching-service` | Wird implementiert |
+| [REQ-003 Rezept-Matching](./Requirements/Rezept-Matching%20361277f89e7380fca88ec215625ec487.md) | `services/matching-service` | Wird implementiert |
+| [REQ-004 Wochenplan-Anzeige](./Requirements/Wochenplan-Anzeige%20361277f89e7380958bc6ee2c41f074de.md) | `apps/mobile` | Wird implementiert |
+| [REQ-005 Einkaufsliste generieren](./Requirements/Einkaufsliste%20generieren%20361277f89e73803f91fef991a0afe734.md) | `services/grocery-service` | Wird implementiert |
+| [REQ-006 Kochtage-Vorschlag](./Requirements/Kochtage-Vorschlag%20382277f89e7380949923c7e46a1dd670.md) | `services/grocery-service` | Geplant, nicht implementiert |
+| [REQ-008 Datenschutz & DSGVO](./Requirements/Datenschutz%20&%20DSGVO%20382277f89e738094abafff39494874a7.md) | Supabase (RLS) | Vereinfacht |
+| [REQ-009 Mahlzeit-Swap](./Requirements/Mahlzeit-Swap%20382277f89e7380c69ba9db3aabaea5d0.md) | `services/grocery-service` | Geplant, nicht implementiert |
+| [REQ-010 Einkaufsliste exportieren](./Requirements/Einkaufsliste%20exportieren%20382277f89e73804b9158d95d300056b0.md) | `services/grocery-service` | Geplant, nicht implementiert |
+
+REQ-007 (Performance Plangenerierung) ist ein Nicht-Funktional-Ziel ohne
+eigenen Code-Umfang und ist für diese Abgabe nicht scharf getrackt.
+
+**Scope-Begründung:** REQ-001–005 werden als vollständiger End-to-End-Durchlauf
+(Onboarding → Matching → Wochenplan → Einkaufsliste) durch alle Module hinweg
+implementiert. REQ-008 wird bewusst nur vereinfacht umgesetzt — eine einzelne
+RLS-Policy als Nachweis des Konzepts, nicht die volle DSGVO-Tiefe. REQ-006,
+REQ-009 und REQ-010 werden nur als Roadmap-Punkt dokumentiert, ohne Code.
+Grund: Der Anspruch dieser Abgabe ist ein **vollständig verstandener,
+kompakter End-to-End-Durchlauf durch alle Module** (siehe [Aufgabe.md](./Aufgabe.md):
+"Prove that you understood the code completely"), nicht Feature-Vollständigkeit.
+Breite Abdeckung würde dieses Ziel verwässern.
 
 `grocery-service` ruft zusätzlich den bereits fertigen Nutrition-Tracker
 (separates Repo, [github.com/jf-bht/nutrition-tracker](https://github.com/jf-bht/nutrition-tracker))
