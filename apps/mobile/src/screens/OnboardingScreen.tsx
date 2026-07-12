@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { ProgressBar } from "../components/ProgressBar";
 import { SelectableCard } from "../components/SelectableCard";
@@ -47,6 +47,12 @@ export interface OnboardingResult {
 export function OnboardingScreen({ onComplete }: { onComplete: (result: OnboardingResult) => void }) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  // Nicht Alert.alert() verwenden: React Native Web zeigt Alert.alert()
+  // standardmäßig nicht sichtbar an (nur console-Ausgabe) — auf der
+  // Web-Zielplattform (siehe README "npm run web") würde ein Fehler damit
+  // lautlos verschluckt. Sichtbarer Inline-Text funktioniert auf allen
+  // drei Zielplattformen (iOS/Android/Web) gleich.
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [gender, setGender] = useState<Gender>("female");
   const [age, setAge] = useState("28");
@@ -80,21 +86,23 @@ export function OnboardingScreen({ onComplete }: { onComplete: (result: Onboardi
     const heightNum = Number(height);
     const weightNum = Number(weight);
     if (!ageNum || ageNum < 14 || ageNum > 120) {
-      Alert.alert("Alter prüfen", "Bitte ein Alter zwischen 14 und 120 Jahren angeben.");
+      setErrorMessage("Bitte ein Alter zwischen 14 und 120 Jahren angeben.");
       return false;
     }
     if (!heightNum || heightNum < 100 || heightNum > 250) {
-      Alert.alert("Größe prüfen", "Bitte eine Größe zwischen 100 und 250 cm angeben.");
+      setErrorMessage("Bitte eine Größe zwischen 100 und 250 cm angeben.");
       return false;
     }
     if (!weightNum || weightNum < 30 || weightNum > 300) {
-      Alert.alert("Gewicht prüfen", "Bitte ein Gewicht zwischen 30 und 300 kg angeben.");
+      setErrorMessage("Bitte ein Gewicht zwischen 30 und 300 kg angeben.");
       return false;
     }
     return true;
   }
 
   async function handleNext() {
+    setErrorMessage(null);
+
     if (step === 1) {
       if (!validateStep1()) return;
       setStep(2);
@@ -117,9 +125,10 @@ export function OnboardingScreen({ onComplete }: { onComplete: (result: Onboardi
       });
       onComplete({ dietType, allergies, macros });
     } catch (err) {
-      Alert.alert(
-        "Verbindung fehlgeschlagen",
-        "matching-service nicht erreichbar. Läuft der Service auf Port 3001?",
+      setErrorMessage(
+        `matching-service nicht erreichbar (Port 3001). Läuft der Service? Details: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
       );
     } finally {
       setSubmitting(false);
@@ -130,7 +139,13 @@ export function OnboardingScreen({ onComplete }: { onComplete: (result: Onboardi
     <View style={styles.screen}>
       <View style={styles.header}>
         {step > 1 ? (
-          <Text style={styles.backButton} onPress={() => setStep(step - 1)}>
+          <Text
+            style={styles.backButton}
+            onPress={() => {
+              setErrorMessage(null);
+              setStep(step - 1);
+            }}
+          >
             ←
           </Text>
         ) : (
@@ -223,6 +238,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (result: Onboardi
       </ScrollView>
 
       <View style={styles.footer}>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         <PrimaryButton
           label={step < TOTAL_STEPS ? "Weiter →" : "Plan erstellen →"}
           onPress={handleNext}
@@ -333,5 +349,11 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+  },
+  errorText: {
+    color: colors.danger,
+    fontSize: 13,
+    marginBottom: spacing.sm,
+    textAlign: "center",
   },
 });

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { colors, radii, spacing, typography } from "../theme";
@@ -26,6 +26,9 @@ export function EinkaufslisteScreen({
   loading: boolean;
 }) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  // Kein Alert.alert(): zeigt auf React Native Web keinen sichtbaren
+  // Dialog (siehe OnboardingScreen). Inline-Banner funktioniert überall.
+  const [showExportNotice, setShowExportNotice] = useState(false);
 
   const totalItems = useMemo(() => groups.reduce((sum, g) => sum + g.items.length, 0), [groups]);
 
@@ -51,10 +54,7 @@ export function EinkaufslisteScreen({
   function handleExportPress() {
     // REQ-010 (Export) ist laut Scope-Entscheidung (README.md) für diese
     // Abgabe bewusst nicht implementiert — nur als Roadmap-Punkt vermerkt.
-    Alert.alert(
-      "Noch nicht verfügbar",
-      "Export/Teilen (REQ-010) ist laut Scope dieser Abgabe nicht implementiert — nur als Roadmap-Punkt dokumentiert.",
-    );
+    setShowExportNotice(true);
   }
 
   return (
@@ -65,6 +65,15 @@ export function EinkaufslisteScreen({
         actionIcon="↑"
         onActionPress={handleExportPress}
       />
+
+      {showExportNotice ? (
+        <Pressable style={styles.noticeBanner} onPress={() => setShowExportNotice(false)}>
+          <Text style={styles.noticeText}>
+            Export/Teilen (REQ-010) ist laut Scope dieser Abgabe nicht implementiert — nur als
+            Roadmap-Punkt dokumentiert. (Tippen, um zu schließen)
+          </Text>
+        </Pressable>
+      ) : null}
 
       {loading ? (
         <View style={styles.loadingWrapper}>
@@ -119,6 +128,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  noticeBanner: {
+    backgroundColor: colors.dangerTint,
+    marginHorizontal: spacing.md,
+    borderRadius: radii.md,
+    padding: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  noticeText: {
+    color: colors.danger,
+    fontSize: 13,
   },
   content: {
     padding: spacing.md,
