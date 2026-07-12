@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import { ZodError } from "zod";
 import { calculateMacros, MacroInput } from "./macros.js";
 import { matchRecipe, MatchInput } from "./matching.js";
+import { RECIPE_POOL } from "./recipes.js";
 
 const app = Fastify({ logger: true });
 
@@ -39,6 +40,19 @@ app.post("/v1/recipes/match", async (request, reply) => {
     }
     throw err;
   }
+});
+
+// Wird von anderen Services (z. B. grocery-service für REQ-005) per REST
+// abgerufen, um Zutaten für die Einkaufsliste zu ermitteln — kein Import,
+// keine geteilte DB, nur dieser Endpoint.
+app.get("/v1/recipes/:id", async (request, reply) => {
+  const { id } = request.params as { id: string };
+  const recipe = RECIPE_POOL.find((r) => r.id === id);
+  if (!recipe) {
+    reply.code(404);
+    return { error: "recipe_not_found" };
+  }
+  return recipe;
 });
 
 const port = Number(process.env.PORT ?? 3001);

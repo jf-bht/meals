@@ -12,12 +12,21 @@ export interface RecipeMacros {
   carbsG: number;
 }
 
+export interface Ingredient {
+  name: string;
+  quantity: number;
+  unit: string;
+}
+
 export interface Recipe {
   id: string;
   name: string;
   dietType: DietType;
   allergens: string[];
   macrosPerPortion: RecipeMacros;
+  // Mengen gelten pro 1 Portion — der Aufrufer (grocery-service) skaliert
+  // mit der tatsächlichen Portionsanzahl aus dem Wochenplan.
+  ingredientsPerPortion: Ingredient[];
 }
 
 // Platzhalter-Pool, bis der reale Rezept-Bestand aus Supabase geladen wird
@@ -31,6 +40,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     macrosPerPortion: { kcal: 550, proteinG: 45, fatG: 12, carbsG: 60 },
+    ingredientsPerPortion: [
+      { name: "Hähnchenbrust", quantity: 150, unit: "g" },
+      { name: "Reis", quantity: 80, unit: "g" },
+      { name: "Brokkoli", quantity: 120, unit: "g" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
   },
   {
     id: "r-02",
@@ -38,6 +53,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     macrosPerPortion: { kcal: 620, proteinG: 40, fatG: 22, carbsG: 55 },
+    ingredientsPerPortion: [
+      { name: "Rinderhack", quantity: 150, unit: "g" },
+      { name: "Süßkartoffel", quantity: 200, unit: "g" },
+      { name: "Zwiebel", quantity: 0.5, unit: "Stück" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
   },
   {
     id: "r-03",
@@ -45,6 +66,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: ["fish"],
     macrosPerPortion: { kcal: 580, proteinG: 38, fatG: 24, carbsG: 45 },
+    ingredientsPerPortion: [
+      { name: "Lachsfilet", quantity: 150, unit: "g" },
+      { name: "Quinoa", quantity: 70, unit: "g" },
+      { name: "Zitrone", quantity: 0.25, unit: "Stück" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
   },
   {
     id: "r-04",
@@ -52,6 +79,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["dairy"],
     macrosPerPortion: { kcal: 480, proteinG: 22, fatG: 14, carbsG: 65 },
+    ingredientsPerPortion: [
+      { name: "Linsen", quantity: 100, unit: "g" },
+      { name: "Naturjoghurt", quantity: 100, unit: "g" },
+      { name: "Zwiebel", quantity: 0.5, unit: "Stück" },
+      { name: "Currypulver", quantity: 1, unit: "TL" },
+    ],
   },
   {
     id: "r-05",
@@ -59,6 +92,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["dairy", "gluten"],
     macrosPerPortion: { kcal: 520, proteinG: 18, fatG: 20, carbsG: 62 },
+    ingredientsPerPortion: [
+      { name: "Feta", quantity: 60, unit: "g" },
+      { name: "Couscous", quantity: 80, unit: "g" },
+      { name: "Zucchini", quantity: 120, unit: "g" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
   },
   {
     id: "r-06",
@@ -66,6 +105,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: ["sesame"],
     macrosPerPortion: { kcal: 500, proteinG: 20, fatG: 18, carbsG: 60 },
+    ingredientsPerPortion: [
+      { name: "Kichererbsen", quantity: 150, unit: "g" },
+      { name: "Tahin", quantity: 1, unit: "EL" },
+      { name: "Reis", quantity: 70, unit: "g" },
+      { name: "Zitrone", quantity: 0.25, unit: "Stück" },
+    ],
   },
   {
     id: "r-07",
@@ -73,6 +118,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: ["soy", "peanut"],
     macrosPerPortion: { kcal: 540, proteinG: 28, fatG: 20, carbsG: 55 },
+    ingredientsPerPortion: [
+      { name: "Tofu", quantity: 150, unit: "g" },
+      { name: "Erdnusssauce", quantity: 2, unit: "EL" },
+      { name: "Reis", quantity: 80, unit: "g" },
+      { name: "Zwiebel", quantity: 0.5, unit: "Stück" },
+    ],
   },
   {
     id: "r-08",
@@ -80,6 +131,12 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegan",
     allergens: [],
     macrosPerPortion: { kcal: 470, proteinG: 21, fatG: 10, carbsG: 70 },
+    ingredientsPerPortion: [
+      { name: "Rote Linsen", quantity: 100, unit: "g" },
+      { name: "Vollkornreis", quantity: 80, unit: "g" },
+      { name: "Zwiebel", quantity: 0.5, unit: "Stück" },
+      { name: "Currypulver", quantity: 1, unit: "TL" },
+    ],
   },
   {
     id: "r-09",
@@ -87,6 +144,11 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "omnivore",
     allergens: [],
     macrosPerPortion: { kcal: 560, proteinG: 42, fatG: 15, carbsG: 58 },
+    ingredientsPerPortion: [
+      { name: "Putenbrust", quantity: 150, unit: "g" },
+      { name: "Kartoffel", quantity: 250, unit: "g" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
   },
   {
     id: "r-10",
@@ -94,5 +156,11 @@ export const RECIPE_POOL: Recipe[] = [
     dietType: "vegetarian",
     allergens: ["egg", "gluten"],
     macrosPerPortion: { kcal: 490, proteinG: 25, fatG: 22, carbsG: 40 },
+    ingredientsPerPortion: [
+      { name: "Eier", quantity: 3, unit: "Stück" },
+      { name: "Vollkornbrot", quantity: 60, unit: "g" },
+      { name: "Paprika", quantity: 80, unit: "g" },
+      { name: "Olivenöl", quantity: 1, unit: "EL" },
+    ],
   },
 ];
