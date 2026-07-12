@@ -40,6 +40,7 @@ const CATEGORY_BY_INGREDIENT: Record<string, GroceryCategory> = {
   "putenbrust": "protein",
   "tofu": "protein",
   "kichererbsen": "protein",
+  "kidneybohnen": "protein",
   "linsen": "protein",
   "rote linsen": "protein",
   "eier": "protein",
@@ -61,6 +62,7 @@ const CATEGORY_BY_INGREDIENT: Record<string, GroceryCategory> = {
   "currypulver": "pantry",
   "tahin": "pantry",
   "erdnusssauce": "pantry",
+  "hummus": "pantry",
 };
 
 function normalizeName(name: string): string {

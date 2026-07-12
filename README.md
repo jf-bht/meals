@@ -63,10 +63,21 @@ Roadmap / Iterationsplanung: [Constitution/roadmap.md](./Constitution/roadmap.md
 npm install
 npm run dev        # startet alle Workspaces über Turborepo
 npm run typecheck  # TypeScript strict über alle Workspaces
+npm run test        # Unit-Tests (matching-service, grocery-service)
 ```
 
 Jeder Service liest seine Konfiguration aus einer `.env`-Datei
 (siehe jeweiliges `.env.example`).
+
+Für die Mobile-App (`apps/mobile`) müssen `matching-service` (Port 3001) und
+`grocery-service` (Port 3002) laufen, bevor Onboarding oder Wochenplan
+funktionieren:
+
+```bash
+npm run dev --workspace=@meals/matching-service
+npm run dev --workspace=@meals/grocery-service
+npm run web --workspace=@meals/mobile   # oder: ios / android
+```
 
 ## Status
 

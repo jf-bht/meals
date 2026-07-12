@@ -1,12 +1,30 @@
 {
   "name": "@meals/mobile",
-  "private": true,
   "version": "0.1.0",
-  "description": "React Native / Expo Client (Platzhalter — Scaffolding folgt in einem späteren Schritt)",
+  "private": true,
+  "description": "React Native / Expo Client — Onboarding (REQ-001) und Wochenplan-Anzeige (REQ-004)",
+  "main": "index.ts",
   "scripts": {
-    "build": "echo \"(placeholder) mobile app not scaffolded yet\"",
-    "dev": "echo \"(placeholder) mobile app not scaffolded yet\"",
-    "lint": "echo \"(placeholder) mobile app not scaffolded yet\"",
-    "typecheck": "echo \"(placeholder) mobile app not scaffolded yet\""
+    "start": "expo start",
+    "dev": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build": "echo \"(placeholder) kein Expo-Build im Scope dieser Abgabe\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"(placeholder) no linter configured yet\""
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~57.0.3",
+    "expo": "~57.0.4",
+    "expo-status-bar": "~57.0.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.0",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
   }
 }

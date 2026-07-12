@@ -1,8 +1,11 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { z, ZodError } from "zod";
 import { buildGroceryList, createMatchingServiceClient } from "./matchingClient.js";
 
 const app = Fastify({ logger: true });
+// Siehe matching-service/src/index.ts: nur für Expo Web relevant.
+await app.register(cors, { origin: true });
 
 const MATCHING_SERVICE_BASE_URL = process.env.MATCHING_SERVICE_BASE_URL ?? "http://localhost:3001";
 const { fetchRecipe } = createMatchingServiceClient(MATCHING_SERVICE_BASE_URL);

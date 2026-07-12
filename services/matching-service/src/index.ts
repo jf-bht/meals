@@ -1,10 +1,16 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import { ZodError } from "zod";
 import { calculateMacros, MacroInput } from "./macros.js";
 import { matchRecipe, MatchInput } from "./matching.js";
 import { RECIPE_POOL } from "./recipes.js";
 
 const app = Fastify({ logger: true });
+// Expo Web läuft im Browser und unterliegt daher CORS — native Clients
+// (iOS/Android) sind davon nicht betroffen. Für den Prototyp reicht ein
+// offener Origin, da es sich um lokale Entwicklungsservices ohne
+// Auth/sensible Daten handelt.
+await app.register(cors, { origin: true });
 
 app.get("/health", async () => {
   return { service: "matching-service", status: "ok" };

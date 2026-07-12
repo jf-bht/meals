@@ -163,4 +163,35 @@ export const RECIPE_POOL: Recipe[] = [
       { name: "Olivenöl", quantity: 1, unit: "EL" },
     ],
   },
+  // r-11/r-12 wurden ergänzt, weil der ursprüngliche Pool (500–620 kcal)
+  // realistische Pro-Mahlzeit-Ziele bei höherem Tageskalorienbedarf (z. B.
+  // ~2300 kcal/Tag ÷ 3 ≈ 766 kcal) nicht innerhalb der ±15%-Toleranz aus
+  // REQ-003 abdeckte — matchRecipe lieferte in diesen Fällen korrekt, aber
+  // zu häufig "no_candidates". Siehe docs/SWT_FINAL_STEP05.
+  {
+    id: "r-11",
+    name: "Chili con Carne mit Reis",
+    dietType: "omnivore",
+    allergens: [],
+    macrosPerPortion: { kcal: 720, proteinG: 45, fatG: 25, carbsG: 70 },
+    ingredientsPerPortion: [
+      { name: "Rinderhack", quantity: 180, unit: "g" },
+      { name: "Kidneybohnen", quantity: 150, unit: "g" },
+      { name: "Reis", quantity: 90, unit: "g" },
+      { name: "Zwiebel", quantity: 0.5, unit: "Stück" },
+    ],
+  },
+  {
+    id: "r-12",
+    name: "Falafel-Teller mit Hummus",
+    dietType: "vegan",
+    allergens: ["sesame"],
+    macrosPerPortion: { kcal: 700, proteinG: 24, fatG: 26, carbsG: 85 },
+    ingredientsPerPortion: [
+      { name: "Kichererbsen", quantity: 180, unit: "g" },
+      { name: "Hummus", quantity: 60, unit: "g" },
+      { name: "Vollkornreis", quantity: 90, unit: "g" },
+      { name: "Tahin", quantity: 1, unit: "EL" },
+    ],
+  },
 ];
