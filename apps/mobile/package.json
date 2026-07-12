@@ -1,0 +1,12 @@
+{
+  "name": "@meals/mobile",
+  "private": true,
+  "version": "0.1.0",
+  "description": "React Native / Expo Client (Platzhalter — Scaffolding folgt in einem späteren Schritt)",
+  "scripts": {
+    "build": "echo \"(placeholder) mobile app not scaffolded yet\"",
+    "dev": "echo \"(placeholder) mobile app not scaffolded yet\"",
+    "lint": "echo \"(placeholder) mobile app not scaffolded yet\"",
+    "typecheck": "echo \"(placeholder) mobile app not scaffolded yet\""
+  }
+}

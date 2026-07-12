@@ -1,0 +1,23 @@
+{
+  "name": "@meals/grocery-service",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Eigenständiger Service für Einkaufslisten-Generierung (REQ-005), Kochtage-Vorschlag (REQ-006), Mahlzeit-Swap (REQ-009) und Export (REQ-010)",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p . --noEmit",
+    "lint": "echo \"(placeholder) no linter configured yet\""
+  },
+  "dependencies": {
+    "fastify": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
